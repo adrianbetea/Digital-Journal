@@ -1,0 +1,139 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table Users {
+  user_id integer [primary key]
+  username varchar 
+  password password
+}
+
+Table University_lectures {
+  lecture_id integer [primary key]
+  lecture_name varchar
+  description varchar
+  year int
+  semester int
+  exam_percentage percentage
+}
+
+Table User_courses {
+  uc_id integer [primary key]
+  user_id integer
+  course_id integer
+  exam_grade float
+  lab_grade float
+}
+
+Table Gym_progress {
+  gp_id int [primary key]
+  user_id id
+  weight float
+  waist float
+  bodyfat percentage
+  benchpress_pb float
+  squats_pb float
+  lat_pulldowns_pb float
+  date date
+  training_plan varchar
+}
+
+Table Family_journal {
+  family_journal_id integer [primary key]
+  user_id integer
+}
+
+Table Events {
+  event_id integer [primary key]
+  name varchar
+  description varchar
+  date date
+  journal_id integer [foreign_key - family_journal or activities_journal]
+}
+
+Table Plans {
+  plan_id integer [primary key]
+  name varchar
+  description varchar
+  journal_id integer
+}
+
+Table Photos {
+  photo_id int [primary key]
+  name varchar
+  photo photo
+  date date
+  event_id int // secondary key if Photos.event_id == Events.event_id
+}
+
+Table Job {
+  job_id int [primary key]
+  user_id int 
+  company_name varchar
+  position varchar
+  start_date date
+  end_date date // optional
+}
+
+Table Activities_journal {
+  activities_journal_id integer [primary key]
+  user_id integer
+}
+
+Table Routines {
+  routine_id integer [primary key]
+  activities_journal_id integer
+  name varchar
+  description varchar
+}
+
+Table Books {
+  book_id integer [primary key]
+  activities_journal_id integer
+  title varchar
+  author varchar
+  read boolean
+  image image
+}
+
+Table Projects {
+  project_id integer [primary key]
+  activities_journal_id integer
+  name varchar
+  description varchar
+}
+
+Table Personal_Journal {
+  personal_journal_id integer [primary key]
+  user_id integer
+}
+
+Table Daily_Weekly_journaling {
+  note_id integer
+  personal_journal_id integer
+  title varchar
+  text text
+  date date
+}
+
+
+Ref: "Users"."user_id" > "User_courses"."user_id"
+Ref: "University_lectures"."lecture_id" > "User_courses"."course_id"
+
+Ref: "Users"."user_id" > "Gym_progress"."user_id"
+
+Ref: "Users"."user_id" > "Family_journal"."user_id"
+Ref: "Family_journal"."family_journal_id" < "Plans"."journal_id"
+Ref: "Family_journal"."family_journal_id" < "Events"."journal_id"
+Ref: "Events"."event_id" < "Photos"."event_id"
+
+Ref: "Users"."user_id" > "Job"."user_id"
+
+Ref: "Users"."user_id" > "Activities_journal"."user_id"
+Ref: "Activities_journal"."activities_journal_id" < "Routines"."activities_journal_id"
+Ref: "Activities_journal"."activities_journal_id" < "Events"."journal_id"
+Ref: "Activities_journal"."activities_journal_id" < "Books"."activities_journal_id"
+Ref: "Activities_journal"."activities_journal_id" < "Projects"."activities_journal_id"
+
+Ref: "Users"."user_id" > "Personal_Journal"."user_id"
+Ref: "Personal_Journal"."personal_journal_id" < "Daily_Weekly_journaling"."personal_journal_id"
+Ref: "Personal_Journal"."personal_journal_id" < "Plans"."journal_id"
