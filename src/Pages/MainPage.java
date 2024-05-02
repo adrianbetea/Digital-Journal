@@ -17,10 +17,10 @@ public class MainPage extends JFrame implements ActionListener, Page {
     private ImageIcon main_page_icon = new ImageIcon("resources/interface images/main_page_logo.png");
     public MainPage() {
         this.university_page = UniversityPage.getInstance();
-        this.gym_page = new GymPage();
-        this.family_page = new FamilyPage();
-        this.job_page = new JobPage();
-        this.activities_page = new ActivitiesPage();
+        this.gym_page = GymPage.getInstance();
+        this.family_page = FamilyPage.getInstance();
+        this.job_page = JobPage.getInstance();
+        this.activities_page = ActivitiesPage.getInstance();
 
         this.setTitle(page_name="Main Page");
         this.setSize(700, 800);

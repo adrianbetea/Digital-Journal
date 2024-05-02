@@ -1,26 +1,29 @@
-import Pages.MainPage;
+import Pages.LoginPage;
+import database.DatabaseConnectionManager;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String args[]){
-        MainPage mp = new MainPage();
-
-        try{
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con= DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/digital_journal","root","root");
-//here sonoo is database name, root is username and password
-            Statement stmt=con.createStatement();
+        LoginPage loginPage = new LoginPage();
+        //MainPage mp = new MainPage();
+        Connection con = DatabaseConnectionManager.getConnection();
+        System.out.println(con);
+        Statement stmt= null;
+        try {
+            stmt = con.createStatement();
             ResultSet rs=stmt.executeQuery("select * from users");
             while(rs.next())
                 System.out.println(rs.getInt(1)+"  "+rs.getString(2)+"  "+rs.getString(3));
             con.close();
-        }catch(Exception e){ System.out.println(e);}
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
