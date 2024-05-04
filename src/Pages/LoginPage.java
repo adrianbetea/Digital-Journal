@@ -4,9 +4,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Dimension2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-public class LoginPage extends JFrame implements ActionListener {
+public class LoginPage extends JFrame implements ActionListener, MouseListener {
+    // database connection
+    private Connection con;
+
+    private static LoginPage instance;
 
     private JPanel login_pane;
     private JLabel login_label;
@@ -21,7 +30,12 @@ public class LoginPage extends JFrame implements ActionListener {
 
     private JButton login_button;
 
-    public LoginPage() {
+    private JButton dont_have_an_account_button;
+
+    public LoginPage(Connection con) {
+        // Set Database Connection
+        this.con = con;
+
         // Login Frame
         this.setTitle("Login");
         this.setSize(400, 500);
@@ -87,19 +101,93 @@ public class LoginPage extends JFrame implements ActionListener {
         this.login_button.setBounds(125, 280, 150,50);
         this.login_button.setFont(new Font(Font.DIALOG,  Font.BOLD, 20));
         this.login_button.setFocusable(false);
-        //this.login_button.setBorderPainted(false);
-        //this.login_button.setContentAreaFilled(false);
+        this.login_button.addActionListener(this);
+
+        // Go to REGISTER PAGE
+        this.dont_have_an_account_button = new JButton("Don't have an account? REGISTER NOW");
+        this.dont_have_an_account_button.setBounds(20, 360, 340, 50);
+        this.dont_have_an_account_button.setFont(new Font(Font.DIALOG,  0, 14));
+        this.dont_have_an_account_button.setForeground(Color.BLACK);
+        this.dont_have_an_account_button.setFocusable(false);
+        this.dont_have_an_account_button.setBorderPainted(false);
+        this.dont_have_an_account_button.setContentAreaFilled(false);
+        this.dont_have_an_account_button.addActionListener(this);
+        this.dont_have_an_account_button.addMouseListener(this);
 
         // Add components to frame
         this.add(login_label);
         this.add(username_panel);
         this.add(password_panel);
         this.add(login_button);
+        this.add(dont_have_an_account_button);
+
 
         this.setVisible(true);
     }
+
+    public static LoginPage getInstance(Connection con) {
+        if(instance == null) {
+            instance = new LoginPage(con);
+        }
+        return instance;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
+
+
+        if(e.getSource() == this.login_button) {
+            String username_fieldText = username_field.getText();
+            String password_fieldText = String.valueOf(password_field.getPassword());
+
+            String query = "SELECT * FROM users WHERE users.username = '"+username_fieldText+"' AND users.password = '"+password_fieldText+"'";
+            try {
+                Statement st = con.createStatement();
+                ResultSet rs = st.executeQuery(query);
+                if(rs.next()) {
+                    // if credentials are ok go to main page
+                    int id = rs.getInt("user_id");
+                    String user = rs.getString("username");
+                    this.dispose();
+                    MainPage.getInstance().setVisible(true);
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        if(e.getSource() == this.dont_have_an_account_button) {
+            this.dispose();
+            RegisterPage.getInstance(con).setVisible(true);
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        if(e.getSource() == this.dont_have_an_account_button) {
+            this.dont_have_an_account_button.setForeground(Color.lightGray);
+        }
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        if(e.getSource() == this.dont_have_an_account_button) {
+            this.dont_have_an_account_button.setForeground(Color.black);
+        }
 
     }
 }
