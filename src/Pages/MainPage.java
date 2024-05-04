@@ -6,21 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainPage extends JFrame implements ActionListener, Page {
-    private UniversityPage university_page;
-    private GymPage gym_page;
-    private FamilyPage family_page;
-    private JobPage job_page;
-    private ActivitiesPage activities_page;
-    private JournalingPage journaling_page;
+    // Singleton Class
+    private static MainPage instance;
+
 
     private String page_name = "Main Page";
     private ImageIcon main_page_icon = new ImageIcon("resources/interface images/main_page_logo.png");
     public MainPage() {
-        this.university_page = UniversityPage.getInstance();
-        this.gym_page = GymPage.getInstance();
-        this.family_page = FamilyPage.getInstance();
-        this.job_page = JobPage.getInstance();
-        this.activities_page = ActivitiesPage.getInstance();
+        UniversityPage.getInstance();
+        GymPage.getInstance();
+        FamilyPage.getInstance();
+        JobPage.getInstance();
+        ActivitiesPage.getInstance();
 
         this.setTitle(page_name="Main Page");
         this.setSize(700, 800);
@@ -33,7 +30,12 @@ public class MainPage extends JFrame implements ActionListener, Page {
         this.setVisible(true);
     }
 
-
+    public static MainPage getInstance() {
+        if (instance == null) {
+            instance = new MainPage();
+        }
+        return instance;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
