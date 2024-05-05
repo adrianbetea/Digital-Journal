@@ -7,4 +7,7 @@ public interface Page {
     int height=800;
     String page_name = "" ;
     ImageIcon logo = null;
+
+    void setSession(int session_id);
+    int getSession();
 }

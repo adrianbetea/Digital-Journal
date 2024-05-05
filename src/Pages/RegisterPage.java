@@ -1,6 +1,7 @@
 package Pages;
 
 import com.sun.tools.javac.Main;
+import database.DatabaseConnectionManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
 
 public class RegisterPage extends JFrame implements ActionListener, MouseListener {
     // database connection
-    private Connection con;
+    private static Connection con;
 
     private static RegisterPage instance;
 
@@ -37,9 +38,9 @@ public class RegisterPage extends JFrame implements ActionListener, MouseListene
 
     private JButton have_an_account_button;
 
-    public RegisterPage(Connection con) {
+    public RegisterPage() {
         // Set Database Connection
-        this.con = con;
+        this.con = DatabaseConnectionManager.getInstance().getConnection();
 
         // Register Frame
         this.setTitle("Login");
@@ -150,9 +151,9 @@ public class RegisterPage extends JFrame implements ActionListener, MouseListene
         this.setVisible(true);
     }
 
-    public static RegisterPage getInstance(Connection con) {
+    public static RegisterPage getInstance() {
         if(instance == null) {
-            instance = new RegisterPage(con);
+            instance = new RegisterPage();
         }
         return instance;
     }
@@ -163,7 +164,7 @@ public class RegisterPage extends JFrame implements ActionListener, MouseListene
         if(e.getSource() == this.register_button) {
             String email_text_field = email_field.getText();
             // Check if email address is valid
-            Pattern email_pattern = Pattern.compile("[A-Za-z0-9.]*@[a-z]*[.]com");
+            Pattern email_pattern = Pattern.compile("[A-Za-z0-9.]*@[a-z]*[.][a-z]*");
             Matcher matcher = email_pattern.matcher(email_text_field);
 
             // if the email address is not valid throw error message and return from method
@@ -174,6 +175,10 @@ public class RegisterPage extends JFrame implements ActionListener, MouseListene
 
             String username_text_field = username_field.getText();
             String password_text_field = String.valueOf(password_field.getPassword());
+            if(password_text_field.length() < 7) {
+                JOptionPane.showMessageDialog(null, "Write a longer password (at least 7 letters)","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             String select_users_query = "SELECT * FROM users WHERE users.username = '"+username_text_field+"' AND users.email = '"+email_text_field+"'";
             try (Statement st = con.createStatement();){
@@ -190,7 +195,7 @@ public class RegisterPage extends JFrame implements ActionListener, MouseListene
                 String insert_user_query = "INSERT INTO users(username, password, email) VALUES('"+username_text_field+"','"+password_text_field+"','"+email_text_field+"')";
                 st.executeUpdate(insert_user_query);
                 this.dispose();
-                LoginPage.getInstance(con).setVisible(true);
+                LoginPage.getInstance().setVisible(true);
 
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -198,7 +203,7 @@ public class RegisterPage extends JFrame implements ActionListener, MouseListene
         }
         if(e.getSource() == this.have_an_account_button) {
             this.dispose();
-            LoginPage.getInstance(con).setVisible(true);
+            LoginPage.getInstance().setVisible(true);
         }
     }
 

@@ -1,5 +1,7 @@
 package Pages;
 
+import database.DatabaseConnectionManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,9 +13,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class LoginPage extends JFrame implements ActionListener, MouseListener {
+public class LoginPage extends JFrame implements ActionListener, MouseListener, Page {
     // database connection
-    private Connection con;
+    private static Connection con;
+
+    // User session
+    private int user_session;
 
     private static LoginPage instance;
 
@@ -32,9 +37,10 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
 
     private JButton dont_have_an_account_button;
 
-    public LoginPage(Connection con) {
+    public LoginPage() {
         // Set Database Connection
-        this.con = con;
+        this.con = DatabaseConnectionManager.getInstance().getConnection();
+
 
         // Login Frame
         this.setTitle("Login");
@@ -125,9 +131,9 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
         this.setVisible(true);
     }
 
-    public static LoginPage getInstance(Connection con) {
+    public static LoginPage getInstance() {
         if(instance == null) {
-            instance = new LoginPage(con);
+            instance = new LoginPage();
         }
         return instance;
     }
@@ -148,7 +154,13 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
                     // if credentials are ok go to main page
                     int id = rs.getInt("user_id");
                     String user = rs.getString("username");
+                    // sets the user session
+                    this.setSession(id);
+                    MainPage.getInstance().setSession(id);
+
+                    // opens main page
                     this.dispose();
+
                     MainPage.getInstance().setVisible(true);
                 }
             } catch (SQLException ex) {
@@ -157,7 +169,7 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
         }
         if(e.getSource() == this.dont_have_an_account_button) {
             this.dispose();
-            RegisterPage.getInstance(con).setVisible(true);
+            RegisterPage.getInstance().setVisible(true);
         }
     }
 
@@ -189,5 +201,16 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
             this.dont_have_an_account_button.setForeground(Color.black);
         }
 
+    }
+
+    @Override
+    public void setSession(int session_id) {
+        this.user_session = session_id;
+
+    }
+
+    @Override
+    public int getSession() {
+        return this.user_session;
     }
 }

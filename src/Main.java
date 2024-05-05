@@ -14,9 +14,9 @@ public class Main {
     public static void main(String args[]){
 
         //MainPage mp = new MainPage();
-        Connection con = DatabaseConnectionManager.getConnection();
+        //Connection con = DatabaseConnectionManager.getConnection();
         //System.out.println(con);
-        LoginPage.getInstance(con).setVisible(true);
+        LoginPage.getInstance().setVisible(true);
         //RegisterPage.getInstance(con).setVisible(true);
     }
 }

@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DatabaseConnectionManager {
-    private static Connection con;
+    public static DatabaseConnectionManager instance;
+
+    public static Connection con;
     public static Connection getConnection() {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -17,4 +19,12 @@ public class DatabaseConnectionManager {
 
         return null;
     }
+
+    public static DatabaseConnectionManager getInstance() {
+        if (instance == null) {
+            instance = new DatabaseConnectionManager();
+        }
+        return instance;
+    }
+
 }
